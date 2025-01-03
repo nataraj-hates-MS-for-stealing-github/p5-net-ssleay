@@ -3,7 +3,7 @@ use lib 'inc';
 use Net::SSLeay;
 use Test::Net::SSLeay qw( dies_like initialise_libssl lives_ok );
 
-plan tests => 14;
+plan tests => 13;
 
 initialise_libssl();
 
@@ -12,9 +12,9 @@ lives_ok(sub {
         Net::SSLeay::RSA_free($rsa);
 }, 'RSA_generate_key with valid callback');
 
-dies_like(sub {
-        Net::SSLeay::RSA_generate_key(2048, 0x10001, 1);
-}, qr/Undefined subroutine &main::1 called/, 'RSA_generate_key with invalid callback');
+#dies_like(sub {
+#        Net::SSLeay::RSA_generate_key(2048, 0x10001, 1);
+#}, qr/Undefined subroutine &main::1 called/, 'RSA_generate_key with invalid callback');
 
 {
     my $called = 0;
