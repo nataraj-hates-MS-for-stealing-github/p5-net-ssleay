@@ -519,8 +519,10 @@ static void handler_list_md_fn(const EVP_MD *m, const char *from, const char *to
  *
  * call_sv(... G_EVAL) will clean old value from global $@ variable. Wiping $@
  * is not expected behavior for your OpenSSL call, so you should
- * create local copy of $@ by running `save_scalar(PL_errgv);` in `SAVETMPS`
- * section. Do it only if you are going to catch and stash exception later.
+ * create local copy of $@ by running `save_scalar(PL_errgv);`. Do it after
+ * `ENTER` macro, but before call_sv(... G_EVAL) call. Original $@ value will
+ * be restored in `LEAVE` macro, so make sure you do not `return`, `croak`
+ * etc, before `LEAVE`, or original $@ value will never be returned.
  *
  * Do not enable "eval mode" for advanced callbacks, unless you are sure that
  * perl callback are set. Check [callback name]!!func field of callback data to
