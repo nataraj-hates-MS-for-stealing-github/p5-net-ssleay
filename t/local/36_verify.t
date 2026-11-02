@@ -34,7 +34,13 @@ SKIP: {
   ok($pm2, 'X509_VERIFY_PARAM_new 2');
   ok(Net::SSLeay::X509_VERIFY_PARAM_inherit($pm2, $pm), 'X509_VERIFY_PARAM_inherit');
   ok(Net::SSLeay::X509_VERIFY_PARAM_set1($pm2, $pm), 'X509_VERIFY_PARAM_inherit');
-  ok(Net::SSLeay::X509_VERIFY_PARAM_set1_name($pm, 'fred'), 'X509_VERIFY_PARAM_set1_name');
+  SKIP: {
+    # X509_VERIFY_PARAM_set1_name is an undocumented function
+    # it has memory leak inside its OpenSSL code, that would hardly ever be fixed
+    # So we just skip the test if Perl has been built with ASan
+    skip 'X509_VERIFY_PARAM_set1_name under ASan', 1 if $Config::Config{ccflags} =~ /sanitize=address/;
+    ok(Net::SSLeay::X509_VERIFY_PARAM_set1_name($pm, 'fred'), 'X509_VERIFY_PARAM_set1_name');
+  }
   ok(Net::SSLeay::X509_V_FLAG_ALLOW_PROXY_CERTS() == 0x40, 'X509_V_FLAG_ALLOW_PROXY_CERTS');
   ok(Net::SSLeay::X509_VERIFY_PARAM_set_flags($pm, Net::SSLeay::X509_V_FLAG_ALLOW_PROXY_CERTS()), 'X509_VERIFY_PARAM_set_flags');
 }
